@@ -1,15 +1,19 @@
 #ifndef _ESP32HELPER_H_
 #define _ESP32HELPER_H_
 
+#define   DC_PIN  5
+#define  SCK_PIN  7
+#define MISO_PIN  9
+#define MOSI_PIN 11
+#define   SS_PIN 12
+#define BUSY_PIN 16
+#define  SDA_PIN 33
+#define  SCL_PIN 35
+
+#define SHT_0x44 SHTSensor::SHT3X
+#define SHT_0x45 SHTSensor::SHT3X_ALT
+
 #include <Arduino.h>
 
-static const uint8_t   DC_PIN =   5;
-static const uint8_t  SCK_PIN =   7;
-static const uint8_t MISO_PIN =   9;
-static const uint8_t MOSI_PIN =  11;
-static const uint8_t   SS_PIN =  12;
-static const uint8_t BUSY_PIN =  16;
-static const uint8_t  SDA_PIN =  33;
-static const uint8_t  SCL_PIN =  35;
 
 #endif
