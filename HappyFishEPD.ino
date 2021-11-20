@@ -2,7 +2,7 @@
 #include <GxEPD2_BW.h>
 #include <GxEPD2_3C.h>
 #include <GxEPD2_7C.h>
-#include <Fonts/FreeMonoBold9pt7b.h>
+#include <Fonts/FreeSansBold24pt7b.h>
 #include <SHTSensor.h>
 #include <Wire.h>
 #include "Config.h"
@@ -36,25 +36,15 @@ void loop() {
   char buf[16];
   dtostrf(cTemp, 4, 1, buf);
 
-  display.setRotation(1);
-  display.setFont(&FreeMonoBold9pt7b);
+  display.setRotation(2);
+  display.setFont(&FreeSansBold24pt7b);
   display.setTextColor(GxEPD_BLACK);
-  int16_t tbx, tby; uint16_t tbw, tbh;
-  // align with centered HelloWorld
-  display.getTextBounds(buf, 0, 0, &tbx, &tby, &tbw, &tbh);
-  uint16_t x = ((display.width() - tbw) / 2) - tbx;
-  // height might be different
-  display.getTextBounds(buf, 0, 0, &tbx, &tby, &tbw, &tbh);
-  uint16_t y = ((display.height() / 4) - tbh / 2) - tby; // y is base line!
-  // make the window big enough to cover (overwrite) descenders of previous text
-  uint16_t wh = FreeMonoBold9pt7b.yAdvance;
-  uint16_t wy = (display.height() / 4) - wh / 2;
-  display.setPartialWindow(0, wy, display.width(), wh);
+  display.setPartialWindow(0, 0, display.width(), display.height());
   display.firstPage();
   do
   {
     display.fillScreen(GxEPD_WHITE);
-    display.setCursor(x, y);
+    display.setCursor(0, FreeSansBold24pt7b.yAdvance);
     display.print(buf);
   }
   while (display.nextPage());
