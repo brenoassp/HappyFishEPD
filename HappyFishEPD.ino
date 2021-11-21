@@ -18,14 +18,13 @@ void setup() {
   Wire.begin(_SDA_PIN, _SCL_PIN);
   Serial.begin(115200);
 
+  display.init(115200);
+
   if (sht.init()) {
     sht.setAccuracy(SHTSensor::SHT_ACCURACY_HIGH);
   } else {
     Serial.println(F("SHT initialization failed"));
   }
-
-  display.init(115200, true, 2, false);
-  display.setPartialWindow(0, 0, display.width(), display.height());
 }
 
 void loop() {
