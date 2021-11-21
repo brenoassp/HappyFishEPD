@@ -58,10 +58,10 @@ void partialUpdate() {
   do
   {
     display.fillScreen(bg);
-    u8g2Fonts.setCursor(0, ta+10);
+    u8g2Fonts.setCursor(5, ta+10);
     u8g2Fonts.print(buf);
     u8g2Fonts.setFont(u8g2_font_logisoso24_tf);
-    u8g2Fonts.setCursor(tw, 38);
+    u8g2Fonts.setCursor(tw+5, 38);
     u8g2Fonts.print("°C");
   }
   while (display.nextPage());
