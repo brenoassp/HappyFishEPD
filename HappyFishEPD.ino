@@ -9,23 +9,23 @@
 #include "ESP32Helper.h"
 #include "PersWiFiManager.h"
 
-GxEPD2_BW<GxEPD2_290, GxEPD2_290::HEIGHT> display(GxEPD2_290(/*CS=*/ SS_PIN, /*DC=*/ DC_PIN, /*RST=*/ MISO_PIN, /*BUSY=*/ BUSY_PIN));
+GxEPD2_BW<GxEPD2_290, GxEPD2_290::HEIGHT> display(GxEPD2_290(/*CS=*/ _CS_PIN, /*DC=*/ _DC_PIN, /*RST=*/ _RST_PIN, /*BUSY=*/ _BUSY_PIN));
 
 SHTSensor sht(SHT_0x45);
 float cTemp;
 
 void setup() {
-  Wire.begin(SDA_PIN, SCL_PIN);
+  Wire.begin(_SDA_PIN, _SCL_PIN);
   Serial.begin(115200);
-
-  display.init(115200);
-  display.setPartialWindow(0, 0, display.width(), display.height());
 
   if (sht.init()) {
     sht.setAccuracy(SHTSensor::SHT_ACCURACY_HIGH);
   } else {
     Serial.println(F("SHT initialization failed"));
   }
+
+  display.init(115200, true, 2, false);
+  display.setPartialWindow(0, 0, display.width(), display.height());
 }
 
 void loop() {
@@ -48,6 +48,5 @@ void loop() {
     display.print(buf);
   }
   while (display.nextPage());
-
   delay(100);
 }
