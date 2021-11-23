@@ -4,8 +4,8 @@
 #include <GxEPD2_BW.h>
 #include <SHTSensor.h>
 #include <U8g2_for_Adafruit_GFX.h>
+#include <WiFi.h>
 #include <Wire.h>
-#include "Config.h"
 #include "ESP32Helper.h"
 #include "PersWiFiManager.h"
 
@@ -14,6 +14,8 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 
 SHTSensor sht(SHT_0x45);
 float cTemp;
+
+PersWiFiManager persWM;
 
 void setup() {
   Wire.begin(_SDA_PIN, _SCL_PIN);
@@ -25,8 +27,10 @@ void setup() {
     Serial.println(F("SHT initialization failed"));
   }
 
-  display.init(115200);
+  display.init();
   u8g2Fonts.begin(display);
+
+  persWM.attemptConnection();
 }
 
 void loop() {
