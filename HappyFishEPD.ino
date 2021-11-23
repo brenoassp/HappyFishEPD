@@ -38,8 +38,10 @@ void loop() {
 
 void partialUpdate() {
   char buf[16];
-  dtostrf(cTemp, 4, 1, buf);
-
+  snprintf_P(buf,
+             sizeof(buf),
+             PSTR("%.1f°"),
+             cTemp);
   uint16_t bg = GxEPD_WHITE;
   uint16_t fg = GxEPD_BLACK;
   display.setRotation(2);
@@ -52,17 +54,14 @@ void partialUpdate() {
   int16_t ta = u8g2Fonts.getFontAscent();
   int16_t td = u8g2Fonts.getFontDescent();
   int16_t th = ta - td;
-  uint16_t x = (display.width() - tw) / 2; // middle
-  display.setPartialWindow(0, 0, display.width(), th+10);
+  uint16_t x = (display.width() - tw) / 2;
+  display.setPartialWindow(0, 0, display.width(), th);
   display.firstPage();
   do
   {
     display.fillScreen(bg);
-    u8g2Fonts.setCursor(5, ta+10);
+    u8g2Fonts.setCursor(x, ta+10);
     u8g2Fonts.print(buf);
-    u8g2Fonts.setFont(u8g2_font_logisoso24_tf);
-    u8g2Fonts.setCursor(tw+5, 38);
-    u8g2Fonts.print("°C");
   }
   while (display.nextPage());
   delay(500);
