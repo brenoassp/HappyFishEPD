@@ -30,6 +30,7 @@ void setup() {
   display.init();
   u8g2Fonts.begin(display);
 
+  persWM.onReady([](PWMEvent_t event) {});
   persWM.attemptConnection();
 }
 
