@@ -4,7 +4,6 @@
 #include <GxEPD2_BW.h>
 #include <SHTSensor.h>
 #include <U8g2_for_Adafruit_GFX.h>
-#include <WiFi.h>
 #include <Wire.h>
 #include "ESP32Helper.h"
 #include "PersWiFiManager.h"
@@ -30,7 +29,7 @@ void setup() {
   display.init();
   u8g2Fonts.begin(display);
 
-  persWM.onReady([](PWMEvent_t event) {});
+  persWM.onReady(handleWiFiReady);
   persWM.attemptConnection();
 }
 
@@ -49,7 +48,7 @@ void partialUpdate() {
              cTemp);
   uint16_t bg = GxEPD_WHITE;
   uint16_t fg = GxEPD_BLACK;
-  display.setRotation(2);
+  display.setRotation(1);
   u8g2Fonts.setFontMode(1);
   u8g2Fonts.setFontDirection(0);
   u8g2Fonts.setForegroundColor(fg);
@@ -60,14 +59,61 @@ void partialUpdate() {
   int16_t td = u8g2Fonts.getFontDescent();
   int16_t th = ta - td;
   uint16_t x = (display.width() - tw) / 2;
-  display.setPartialWindow(0, 0, display.width(), th);
+  uint16_t y = (display.height() - th) / 2 + ta;
+  display.setPartialWindow(0, 0, display.width(), display.height());
   display.firstPage();
   do
   {
     display.fillScreen(bg);
-    u8g2Fonts.setCursor(x, ta+10);
+    u8g2Fonts.setCursor(x, y);
     u8g2Fonts.print(buf);
   }
   while (display.nextPage());
-  delay(500);
+  delay(100);
+}
+
+void handleWiFiReady(PWMEvent_t event) {
+  char buf[64];
+  switch(event) {
+    case PWM_WIFI_AWAIT:
+      strncpy_P(buf,
+                PSTR("Waiting for WiFi"),
+                sizeof(buf));
+      break;
+    case PWM_WIFI_CONNECTED:
+      strncpy_P(buf,
+                PSTR("WiFi Connected"),
+                sizeof(buf));
+      break;
+    case PWM_SMARTCONFIG_AWAIT:
+      strncpy_P(buf,
+                PSTR("Waiting for SmartConfig"),
+                sizeof(buf));
+      break;
+    default: break;
+  }
+  uint16_t bg = GxEPD_WHITE;
+  uint16_t fg = GxEPD_BLACK;
+  display.setRotation(1);
+  u8g2Fonts.setFontMode(1);
+  u8g2Fonts.setFontDirection(0);
+  u8g2Fonts.setForegroundColor(fg);
+  u8g2Fonts.setBackgroundColor(bg);
+  u8g2Fonts.setFont(u8g2_font_helvB10_tf);
+  int16_t tw = u8g2Fonts.getUTF8Width(buf);
+  int16_t ta = u8g2Fonts.getFontAscent();
+  int16_t td = u8g2Fonts.getFontDescent();
+  int16_t th = ta - td;
+  uint16_t x = (display.width() - tw) / 2;
+  uint16_t y = (display.height() - th) / 2 + ta;
+  display.setPartialWindow(0, 0, display.width(), display.height());
+  display.firstPage();
+  do
+  {
+    display.fillScreen(bg);
+    u8g2Fonts.setCursor(x, y);
+    u8g2Fonts.print(buf);
+  }
+  while (display.nextPage());
+  delay(1000);
 }
