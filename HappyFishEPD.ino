@@ -14,11 +14,13 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 SHTSensor sht(SHT_0x45);
 float cTemp;
 
+Preferences prefs;
 PersWiFiManager persWM;
 
 void setup() {
   Wire.begin(_SDA_PIN, _SCL_PIN);
   Serial.begin(115200);
+  // while (!Serial) ;
 
   if (sht.init()) {
     sht.setAccuracy(SHTSensor::SHT_ACCURACY_HIGH);
@@ -29,7 +31,8 @@ void setup() {
   display.init();
   u8g2Fonts.begin(display);
 
-  persWM.onReady(handleWiFiReady);
+  persWM.loadPrefs(prefs);
+  persWM.onReady(handleWiFiOnReady);
   persWM.attemptConnection();
 }
 
@@ -53,7 +56,7 @@ void partialUpdate() {
   u8g2Fonts.setFontDirection(0);
   u8g2Fonts.setForegroundColor(fg);
   u8g2Fonts.setBackgroundColor(bg);
-  u8g2Fonts.setFont(u8g2_font_logisoso42_tf);
+  u8g2Fonts.setFont(u8g2_font_logisoso46_tf);
   int16_t tw = u8g2Fonts.getUTF8Width(buf);
   int16_t ta = u8g2Fonts.getFontAscent();
   int16_t td = u8g2Fonts.getFontDescent();
@@ -72,7 +75,7 @@ void partialUpdate() {
   delay(100);
 }
 
-void handleWiFiReady(PWMEvent_t event) {
+void handleWiFiOnReady(pwm_event_t event) {
   char buf[64];
   switch(event) {
     case PWM_WIFI_AWAIT:
@@ -99,7 +102,7 @@ void handleWiFiReady(PWMEvent_t event) {
   u8g2Fonts.setFontDirection(0);
   u8g2Fonts.setForegroundColor(fg);
   u8g2Fonts.setBackgroundColor(bg);
-  u8g2Fonts.setFont(u8g2_font_helvB10_tf);
+  u8g2Fonts.setFont(u8g2_font_helvB12_tf);
   int16_t tw = u8g2Fonts.getUTF8Width(buf);
   int16_t ta = u8g2Fonts.getFontAscent();
   int16_t td = u8g2Fonts.getFontDescent();
