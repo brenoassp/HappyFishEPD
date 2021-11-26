@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <elapsedMillis.h>
-#include <Preferences.h>
 #include <WiFi.h>
 
 typedef enum {
@@ -12,19 +11,15 @@ typedef enum {
   PWM_SMARTCONFIG_AWAIT
 } pwm_event_t;
 
-typedef void (*WiFiOnReadyHandler)(pwm_event_t event);
+typedef void (*OnWiFiBegin)(pwm_event_t event);
 
 class PersWiFiManager {
   const unsigned long _timeoutLength = 60000;
-  WiFiOnReadyHandler _onReadyHandler = NULL;
-  char _hostname[32];
+  char _hostname[32] = "esp32s2";
 
   public:
-    void loadPrefs(Preferences &prefs);
-    void attemptConnection();
+    void begin(OnWiFiBegin handleWifiOnBegin);
     void handleWiFi();
-    void onReady(WiFiOnReadyHandler fn);
-    void handleOnReady(pwm_event_t event);
 };
 
 #endif

@@ -14,13 +14,12 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 SHTSensor sht(SHT_0x45);
 float cTemp;
 
-Preferences prefs;
 PersWiFiManager persWM;
 
 void setup() {
-  Wire.begin(_SDA_PIN, _SCL_PIN);
   Serial.begin(115200);
   // while (!Serial) ;
+  Wire.begin(_SDA_PIN, _SCL_PIN);
 
   if (sht.init()) {
     sht.setAccuracy(SHTSensor::SHT_ACCURACY_HIGH);
@@ -31,9 +30,7 @@ void setup() {
   display.init();
   u8g2Fonts.begin(display);
 
-  persWM.loadPrefs(prefs);
-  persWM.onReady(handleWiFiOnReady);
-  persWM.attemptConnection();
+  persWM.begin(handleWiFiBegin);
 }
 
 void loop() {
@@ -75,7 +72,7 @@ void partialUpdate() {
   delay(100);
 }
 
-void handleWiFiOnReady(pwm_event_t event) {
+void handleWiFiBegin(pwm_event_t event) {
   char buf[64];
   switch(event) {
     case PWM_WIFI_AWAIT:
