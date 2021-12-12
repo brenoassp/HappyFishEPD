@@ -18,8 +18,8 @@ GxEPD2_BW<GxEPD2_290, GxEPD2_290::HEIGHT> display(GxEPD2_290(/*CS=*/ _CS_PIN, /*
 U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 
 Button2 btn1(_D36_PIN);
-Relay r1(_D38_PIN, true);
-Relay r2(_D40_PIN, true);
+Relay r1(_D38_PIN);
+Relay r2(_D40_PIN);
 Tstat tstat(r2);
 
 SHTSensor sht(SHT_0x45);
