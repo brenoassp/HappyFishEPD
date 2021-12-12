@@ -1,0 +1,11 @@
+{
+  "server": {
+    "hostname": "myesp32",
+    "user": "admin",
+    "pass": ""
+  },
+  "alarms": {
+    "on": 28800,
+    "off": 57600
+  }
+}
