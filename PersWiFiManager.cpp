@@ -8,7 +8,7 @@ void PersWiFiManager::begin(OnWiFiBegin handleWiFiBegin) {
   Serial.println(F("Waiting for WiFi."));
   if (handleWiFiBegin) handleWiFiBegin(PWM_WIFI_AWAIT);
   elapsedMillis timeElapsed;
-  while (WiFi.status() != WL_CONNECTED && timeElapsed < _timeoutLength) {
+  while (WiFi.status() != WL_CONNECTED && timeElapsed < timeoutLength) {
     delay(500);
     Serial.print(F("."));
   }

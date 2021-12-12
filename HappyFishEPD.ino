@@ -17,6 +17,11 @@
 GxEPD2_BW<GxEPD2_290, GxEPD2_290::HEIGHT> display(GxEPD2_290(/*CS=*/ _CS_PIN, /*DC=*/ _DC_PIN, /*RST=*/ _RST_PIN, /*BUSY=*/ _BUSY_PIN));
 U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 
+Button2 btn1(_D36_PIN);
+Relay r1(_D38_PIN, true);
+Relay r2(_D40_PIN, true);
+Tstat tstat(r2);
+
 SHTSensor sht(SHT_0x45);
 float cTemp;
 
@@ -35,12 +40,20 @@ void setup() {
 
   if (sht.init()) {
     sht.setAccuracy(SHTSensor::SHT_ACCURACY_HIGH);
+    tstat.setup(TstatMode::HEAT, 25.5, /* hysteresis */ 1, /* lowerLimit */ 0, /* upperLimit */ 28, timeoutLength*10);
   } else {
     Serial.println(F("SHT initialization failed"));
   }
 
   display.init();
   u8g2Fonts.begin(display);
+
+  r1.setup();
+  r2.setup();
+  digitalWrite(btn1.getAttachPin(), LOW);
+  btn1.setPressedHandler([](Button2 &btn) {
+    r1.toggle();
+  });
 
   if (!LittleFS.begin()) {
     Serial.println(F("Failed to mount file system"));
@@ -50,15 +63,11 @@ void setup() {
 
   setSyncProvider(syncProvider);
   Alarm.alarmRepeat(0,0,config.alarms.on, []() {
-
+    r1.turnOn();
   });
   Alarm.alarmRepeat(0,0,config.alarms.off, []() {
-
+    r1.turnOff();
   });
-}
-
-time_t syncProvider() {
-  return rtc.getEpoch();
 }
 
 void loop() {
@@ -74,6 +83,7 @@ void loop() {
 
   if (sht.readSample()) {
     cTemp = sht.getTemperature();
+    tstat.handle(cTemp);
   }
 
   partialUpdate();
@@ -81,8 +91,12 @@ void loop() {
 
 void vTaskCode(void *pvParameter) {
   for(;;) {
-
+    btn1.loop();
   }
+}
+
+time_t syncProvider() {
+  return rtc.getEpoch();
 }
 
 void partialUpdate() {

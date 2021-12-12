@@ -9,6 +9,7 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include "Config.h"
+#include "ESP32Helper.h"
 
 typedef enum {
   PWM_WIFI_AWAIT,
@@ -19,7 +20,6 @@ typedef enum {
 typedef void (*OnWiFiBegin)(pwm_event_t event);
 
 class PersWiFiManager {
-  const unsigned long _timeoutLength = 60000;
   const char *_poolServerName = "br.pool.ntp.org";
   const long _timeOffset = -3*3600;
   Config *_config;
