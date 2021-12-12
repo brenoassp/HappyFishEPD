@@ -1,9 +1,13 @@
 #define ENABLE_GxEPD2_GFX 0
+#include <Button2.h>
+#include <ESP32Time.h>
 #include <GxEPD2_3C.h>
 #include <GxEPD2_7C.h>
 #include <GxEPD2_BW.h>
 #include <LittleFS.h>
 #include <SHTSensor.h>
+#include <TimeAlarms.h>
+#include <TimeLib.h>
 #include <U8g2_for_Adafruit_GFX.h>
 #include <Wire.h>
 #include "Config.h"
@@ -18,12 +22,16 @@ float cTemp;
 
 bool shouldReboot = false;
 Config config;
-PersWiFiManager persWM(&config);
+ESP32Time rtc;
+PersWiFiManager persWM(&config, &rtc);
+
+TaskHandle_t xHandle;
 
 void setup() {
   Serial.begin(115200);
   // while (!Serial) ;
   Wire.begin(_SDA_PIN, _SCL_PIN);
+  xTaskCreatePinnedToCore(vTaskCode, "vTaskCode", 2048, NULL,1, &xHandle, /* core */ 0);
 
   if (sht.init()) {
     sht.setAccuracy(SHTSensor::SHT_ACCURACY_HIGH);
@@ -39,6 +47,18 @@ void setup() {
   }
   loadConfigFile(configFilePath, config);
   persWM.begin(handleWiFiBegin);
+
+  setSyncProvider(syncProvider);
+  Alarm.alarmRepeat(0,0,config.alarms.on, []() {
+
+  });
+  Alarm.alarmRepeat(0,0,config.alarms.off, []() {
+
+  });
+}
+
+time_t syncProvider() {
+  return rtc.getEpoch();
 }
 
 void loop() {
@@ -47,13 +67,22 @@ void loop() {
     delay(100);
     ESP.restart();
   }
+
   persWM.handleWiFi();
+
+  Alarm.delay(1000);
 
   if (sht.readSample()) {
     cTemp = sht.getTemperature();
   }
 
   partialUpdate();
+}
+
+void vTaskCode(void *pvParameter) {
+  for(;;) {
+
+  }
 }
 
 void partialUpdate() {

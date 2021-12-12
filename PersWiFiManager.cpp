@@ -42,10 +42,21 @@ void PersWiFiManager::begin(OnWiFiBegin handleWiFiBegin) {
 
 void PersWiFiManager::handleWiFi() {
   ArduinoOTA.handle();
+  if (_timeClient.update()) {
+    _rtc->setTime(_timeClient.getEpochTime());
+  }
+  // Serial.println(_timeClient.getFormattedTime());
 }
 
 void PersWiFiManager::_initOTA() {
   ArduinoOTA.setHostname((const char *)_config->server.hostname);
   ArduinoOTA.setPassword((const char *)_config->server.pass);
   ArduinoOTA.begin();
+}
+
+void PersWiFiManager::_initNTP() {
+  _timeClient.begin();
+  if (_timeClient.forceUpdate()) {
+    _rtc->setTime(_timeClient.getEpochTime());
+  }
 }
