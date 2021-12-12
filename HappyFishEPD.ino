@@ -2,9 +2,11 @@
 #include <GxEPD2_3C.h>
 #include <GxEPD2_7C.h>
 #include <GxEPD2_BW.h>
+#include <LittleFS.h>
 #include <SHTSensor.h>
 #include <U8g2_for_Adafruit_GFX.h>
 #include <Wire.h>
+#include "Config.h"
 #include "ESP32Helper.h"
 #include "PersWiFiManager.h"
 
@@ -14,7 +16,9 @@ U8G2_FOR_ADAFRUIT_GFX u8g2Fonts;
 SHTSensor sht(SHT_0x45);
 float cTemp;
 
-PersWiFiManager persWM;
+bool shouldReboot = false;
+Config config;
+PersWiFiManager persWM(&config);
 
 void setup() {
   Serial.begin(115200);
@@ -30,13 +34,25 @@ void setup() {
   display.init();
   u8g2Fonts.begin(display);
 
+  if (!LittleFS.begin()) {
+    Serial.println(F("Failed to mount file system"));
+  }
+  loadConfigFile(configFilePath, config);
   persWM.begin(handleWiFiBegin);
 }
 
 void loop() {
+  if (shouldReboot) {
+    Serial.println(F("Rebooting..."));
+    delay(100);
+    ESP.restart();
+  }
+  persWM.handleWiFi();
+
   if (sht.readSample()) {
     cTemp = sht.getTemperature();
   }
+
   partialUpdate();
 }
 

@@ -2,8 +2,10 @@
 #define _PERSWIFIMANAGER_H_
 
 #include <Arduino.h>
+#include <ArduinoOTA.h>
 #include <elapsedMillis.h>
 #include <WiFi.h>
+#include "Config.h"
 
 typedef enum {
   PWM_WIFI_AWAIT,
@@ -15,9 +17,11 @@ typedef void (*OnWiFiBegin)(pwm_event_t event);
 
 class PersWiFiManager {
   const unsigned long _timeoutLength = 60000;
-  char _hostname[32] = "esp32s2";
+  Config *_config;
+  void _initOTA();
 
   public:
+    PersWiFiManager(Config *config): _config(config) {};
     void begin(OnWiFiBegin handleWifiOnBegin);
     void handleWiFi();
 };

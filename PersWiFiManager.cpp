@@ -2,7 +2,7 @@
 
 void PersWiFiManager::begin(OnWiFiBegin handleWiFiBegin) {
   WiFi.mode(WIFI_AP_STA);
-  WiFi.setHostname(_hostname);
+  WiFi.setHostname(_config->server.hostname);
   WiFi.begin();
 
   Serial.println(F("Waiting for WiFi."));
@@ -36,6 +36,16 @@ void PersWiFiManager::begin(OnWiFiBegin handleWiFiBegin) {
   if (handleWiFiBegin) handleWiFiBegin(PWM_WIFI_CONNECTED);
   Serial.print(F("IP Address: "));
   Serial.println(WiFi.localIP());
+
+  _initOTA();
 }
 
-void PersWiFiManager::handleWiFi() {}
+void PersWiFiManager::handleWiFi() {
+  ArduinoOTA.handle();
+}
+
+void PersWiFiManager::_initOTA() {
+  ArduinoOTA.setHostname((const char *)_config->server.hostname);
+  ArduinoOTA.setPassword((const char *)_config->server.pass);
+  ArduinoOTA.begin();
+}
