@@ -1,13 +1,15 @@
 #include "PersWiFiManager.h"
 
+PersWiFiManager persWM;
+
 void PersWiFiManager::_begin() {
-  WiFi.setHostname(_config->server.hostname);
+  WiFi.setHostname(config.server.hostname);
   WiFi.begin();
 }
 
 void PersWiFiManager::_initOTA() {
-  ArduinoOTA.setHostname((const char *)_config->server.hostname);
-  ArduinoOTA.setPassword((const char *)_config->server.pass);
+  ArduinoOTA.setHostname((const char *)config.server.hostname);
+  ArduinoOTA.setPassword((const char *)config.server.pass);
   ArduinoOTA.begin();
 }
 
@@ -56,13 +58,13 @@ void PersWiFiManager::handleWiFi() {
   ArduinoOTA.handle();
 
   if (_timeClient.update()) {
-    _rtc->setTime(_timeClient.getEpochTime());
+    rtc.setTime(_timeClient.getEpochTime());
   }
 
-  if (WiFi.status() != WL_CONNECTED && _timeElapsed >= timeoutLength) {
+  /*if (WiFi.status() != WL_CONNECTED && _timeElapsed >= timeoutLength) {
     Serial.println(F("Reconnecting to WiFi..."));
     WiFi.disconnect();
     WiFi.reconnect();
     _timeElapsed = 0;
-  }
+  }*/
 }

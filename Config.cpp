@@ -1,6 +1,7 @@
 #include "Config.h"
 
 const char* configFilePath = "/config.txt";
+Config config;
 
 void ServerConfig::load(JsonObjectConst obj) {
   strncpy_P(hostname,

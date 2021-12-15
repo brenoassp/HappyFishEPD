@@ -1,6 +1,5 @@
 #define ENABLE_GxEPD2_GFX 0
 #include <Button2.h>
-#include <ESP32Time.h>
 #include <GxEPD2_3C.h>
 #include <GxEPD2_7C.h>
 #include <GxEPD2_BW.h>
@@ -30,9 +29,6 @@ SHTSensor sht(SHT_0x44);
 float cTemp;
 
 bool shouldReboot = false;
-Config config;
-ESP32Time rtc;
-PersWiFiManager persWM(&config, &rtc);
 WiFiClient client;
 
 TaskHandle_t xHandle;
@@ -98,7 +94,7 @@ void loop() {
   char buf[16];
   snprintf_P(buf,
              sizeof(buf),
-             PSTR("%.1f°"),
+             PSTR("%.2f°"),
              cTemp);
   middlePartialUpdate(buf);
 

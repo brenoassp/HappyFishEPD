@@ -1,6 +1,7 @@
 #include "ESP32Helper.h"
 
 const unsigned long timeoutLength = 60000;
+ESP32Time rtc;
 
 void Relay::setup() {
   pinMode(_pin, OUTPUT);

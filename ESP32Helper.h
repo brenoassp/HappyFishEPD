@@ -24,8 +24,10 @@
 
 #include <Arduino.h>
 #include <elapsedMillis.h>
+#include <ESP32Time.h>
 
 extern const unsigned long timeoutLength;
+extern ESP32Time rtc;
 
 class Relay {
   byte _pin;
