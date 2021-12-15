@@ -1,5 +1,7 @@
 #include "PersWiFiManager.h"
 
+elapsedMillis timeElapsed;
+
 void PersWiFiManager::_begin() {
   WiFi.setHostname(config.server.hostname);
   WiFi.begin();
@@ -21,11 +23,11 @@ void PersWiFiManager::begin() {
   _begin();
 
   Serial.println(F("Waiting for WiFi."));
-  while (WiFi.status() != WL_CONNECTED && _timeElapsed < timeoutLength) {
+  while (WiFi.status() != WL_CONNECTED && timeElapsed < timeoutLength) {
     delay(500);
     Serial.print(F("."));
   }
-  _timeElapsed = 0;
+  timeElapsed = 0;
 
   if (WiFi.status() != WL_CONNECTED) {
     WiFi.beginSmartConfig();
@@ -54,15 +56,9 @@ void PersWiFiManager::begin() {
 
 void PersWiFiManager::handleWiFi() {
   ArduinoOTA.handle();
-
   if (_timeClient.update()) {
     rtc.setTime(_timeClient.getEpochTime());
   }
-
-  /*if (WiFi.status() != WL_CONNECTED && _timeElapsed >= timeoutLength) {
-    Serial.println(F("Reconnecting to WiFi..."));
-    WiFi.disconnect();
-    WiFi.reconnect();
-    _timeElapsed = 0;
-  }*/
 }
+
+PersWiFiManager PersWiFi;

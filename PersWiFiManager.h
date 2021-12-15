@@ -13,7 +13,6 @@
 class PersWiFiManager {
   const char*       _poolServerName = "br.pool.ntp.org";
   const long        _timeOffset = -3*3600;
-  elapsedMillis     _timeElapsed;
   WiFiUDP           _ntpUDP;
   NTPClient         _timeClient;
   void              _begin();
@@ -27,5 +26,7 @@ class PersWiFiManager {
     void begin();
     void handleWiFi();
 };
+
+extern PersWiFiManager PersWiFi;
 
 #endif

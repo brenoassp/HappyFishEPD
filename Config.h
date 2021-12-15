@@ -29,11 +29,11 @@ struct Config {
   void save(JsonObject) const;
 };
 
-extern Config config;
-
 bool deserializeConfig(Stream& src, Config& config);
 bool serializeConfig(const Config& config, Print& dest);
 bool loadConfigFile(const char* filename, Config& config);
 bool saveConfigFile(const char* filename, const Config& config);
+
+extern Config config;
 
 #endif

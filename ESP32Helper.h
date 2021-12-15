@@ -1,6 +1,10 @@
 #ifndef _ESP32HELPER_H_
 #define _ESP32HELPER_H_
 
+#include <Arduino.h>
+#include <elapsedMillis.h>
+#include <ESP32Time.h>
+
 #define   _DC_PIN  5
 #define  _SCK_PIN  7
 #define _MISO_PIN  9
@@ -21,10 +25,6 @@
 
 #define SHT_0x44 SHTSensor::SHT3X
 #define SHT_0x45 SHTSensor::SHT3X_ALT
-
-#include <Arduino.h>
-#include <elapsedMillis.h>
-#include <ESP32Time.h>
 
 extern const unsigned long timeoutLength;
 extern ESP32Time rtc;
