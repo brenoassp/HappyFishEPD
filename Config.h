@@ -28,6 +28,7 @@ struct Config {
   void load(JsonObjectConst);
   void save(JsonObject) const;
 };
+
 extern Config config;
 
 bool deserializeConfig(Stream& src, Config& config);

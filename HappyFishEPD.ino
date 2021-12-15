@@ -29,6 +29,7 @@ SHTSensor sht(SHT_0x44);
 float cTemp;
 
 bool shouldReboot = false;
+PersWiFiManager persWM;
 WiFiClient client;
 
 TaskHandle_t xHandle;
@@ -94,7 +95,7 @@ void loop() {
   char buf[16];
   snprintf_P(buf,
              sizeof(buf),
-             PSTR("%.2f°"),
+             PSTR("%.3f°"),
              cTemp);
   middlePartialUpdate(buf);
 

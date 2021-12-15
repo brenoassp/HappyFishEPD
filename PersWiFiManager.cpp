@@ -1,7 +1,5 @@
 #include "PersWiFiManager.h"
 
-PersWiFiManager persWM;
-
 void PersWiFiManager::_begin() {
   WiFi.setHostname(config.server.hostname);
   WiFi.begin();
