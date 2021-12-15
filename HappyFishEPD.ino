@@ -29,6 +29,7 @@ SHTSensor sht(SHT_0x44);
 float cTemp;
 
 bool shouldReboot = false;
+PersWiFiManager persWM;
 WiFiClient client;
 
 TaskHandle_t xHandle;
@@ -64,7 +65,7 @@ void setup() {
     Serial.println(F("Failed to mount file system"));
   }
   loadConfigFile(configFilePath, config);
-  PersWiFi.begin();
+  persWM.begin();
 
   setSyncProvider([](){ return rtc.getEpoch(); });
   Alarm.alarmRepeat(0,0,config.alarms.on, [](){ r1.turnOn(); });
@@ -80,7 +81,7 @@ void loop() {
     ESP.restart();
   }
   Alarm.delay(1000);
-  PersWiFi.handleWiFi();
+  persWM.handleWiFi();
 
   if (sht.readSample()) {
     cTemp = sht.getTemperature();

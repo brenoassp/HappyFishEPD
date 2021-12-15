@@ -56,9 +56,8 @@ void PersWiFiManager::begin() {
 
 void PersWiFiManager::handleWiFi() {
   ArduinoOTA.handle();
+
   if (_timeClient.update()) {
     rtc.setTime(_timeClient.getEpochTime());
   }
 }
-
-PersWiFiManager PersWiFi;
