@@ -1,6 +1,6 @@
 #include "Config.h"
 
-const char *configFilePath = "/config.txt";
+const char* configFilePath = "/config.txt";
 
 void ServerConfig::load(JsonObjectConst obj) {
   strncpy_P(hostname,
@@ -40,7 +40,7 @@ void Config::save(JsonObject obj) const {
   alarms.save(obj.createNestedObject("alarms"));
 }
 
-bool deserializeConfig(Stream &src, Config &config) {
+bool deserializeConfig(Stream& src, Config& config) {
   const size_t capacity = 1024;
   StaticJsonDocument<capacity> doc;
   DeserializationError error = deserializeJson(doc, src);
@@ -49,7 +49,7 @@ bool deserializeConfig(Stream &src, Config &config) {
   return true;
 }
 
-bool serializeConfig(const Config &config, Print &dest) {
+bool serializeConfig(const Config& config, Print& dest) {
   const size_t capacity = 1024;
   StaticJsonDocument<capacity> doc;
   JsonObject root = doc.to<JsonObject>();
@@ -57,7 +57,7 @@ bool serializeConfig(const Config &config, Print &dest) {
   return serializeJson(doc, dest) > 0;
 }
 
-bool loadConfigFile(const char *filename, Config &config) {
+bool loadConfigFile(const char* filename, Config& config) {
   File file = LittleFS.open(filename, "r");
   if (!file) {
     Serial.println(F("Failed to open config file"));
@@ -72,7 +72,7 @@ bool loadConfigFile(const char *filename, Config &config) {
   return true;
 }
 
-bool saveConfigFile(const char *filename, const Config &config) {
+bool saveConfigFile(const char* filename, const Config& config) {
   File file = LittleFS.open(filename, "w");
   if (!file) {
     Serial.println(F("Failed to create config file"));

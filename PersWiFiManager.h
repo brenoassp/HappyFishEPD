@@ -11,30 +11,24 @@
 #include "Config.h"
 #include "ESP32Helper.h"
 
-typedef enum {
-  PWM_WIFI_AWAIT,
-  PWM_WIFI_CONNECTED,
-  PWM_SMARTCONFIG_AWAIT
-} pwm_event_t;
-
-typedef void (*OnWiFiBegin)(pwm_event_t event);
-
 class PersWiFiManager {
-  const char *_poolServerName = "br.pool.ntp.org";
-  const long _timeOffset = -3*3600;
-  Config *_config;
-  ESP32Time *_rtc;
-  WiFiUDP _ntpUDP;
-  NTPClient _timeClient;
-  void _initOTA();
-  void _initNTP();
+  const char*       _poolServerName = "br.pool.ntp.org";
+  const long        _timeOffset = -3*3600;
+  Config*           _config;
+  elapsedMillis     _timeElapsed;
+  WiFiUDP           _ntpUDP;
+  NTPClient         _timeClient;
+  ESP32Time*        _rtc;
+  void              _begin();
+  void              _initOTA();
+  void              _initNTP();
 
   public:
-    PersWiFiManager(Config *config, ESP32Time *rtc):
-      _config(config),
-      _rtc(rtc),
-      _timeClient(_ntpUDP, _poolServerName, _timeOffset) {};
-    void begin(OnWiFiBegin handleWifiOnBegin);
+    PersWiFiManager(Config* config, ESP32Time* rtc):
+                    _config(config),
+                    _rtc(rtc),
+                    _timeClient(_ntpUDP, _poolServerName, _timeOffset) {};
+    void begin();
     void handleWiFi();
 };
 

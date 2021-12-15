@@ -56,20 +56,20 @@ enum TstatState {
 };
 
 class Tstat {
-  Relay _r;
-  TstatMode _mode = TstatMode::NONE;
-  TstatState _state = TstatState::IDLE;
+  Relay         _r;
+  TstatMode     _mode = TstatMode::NONE;
+  TstatState    _state = TstatState::IDLE;
   elapsedMillis _timeElapsed;
-  float _setpoint;
-  float _hysteresis;
-  float _lowerLimit;
-  float _upperLimit;
+  float         _setpoint;
+  float         _hysteresis;
+  float         _lowerLimit;
+  float         _upperLimit;
   unsigned long _interval;
   bool tooCold(const float cTemp);
   bool tooHot(const float cTemp);
 
   public:
-    Tstat(const Relay &r): _r(r) {};
+    Tstat(const Relay& r): _r(r) {};
     void setup(const TstatMode mode,
                const float setpoint,
                const float hysteresis,
