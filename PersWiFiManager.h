@@ -11,13 +11,13 @@
 #include "ESP32Helper.h"
 
 class PersWiFiManager {
-  const char*       _poolServerName = "br.pool.ntp.org";
-  const long        _timeOffset = -3*3600;
-  WiFiUDP           _ntpUDP;
-  NTPClient         _timeClient;
-  void              _begin();
-  void              _initOTA();
-  void              _initNTP();
+  const char* _poolServerName = "br.pool.ntp.org";
+  const long  _timeOffset = -3*3600;
+  WiFiUDP     _ntpUDP;
+  NTPClient   _timeClient;
+  void        _begin();
+  void        _initOTA();
+  void        _initNTP();
 
   public:
     PersWiFiManager():
@@ -26,5 +26,7 @@ class PersWiFiManager {
     void begin();
     void handleWiFi();
 };
+
+extern PersWiFiManager PersWM;
 
 #endif

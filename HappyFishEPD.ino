@@ -29,7 +29,6 @@ SHTSensor sht(SHT_0x44);
 float cTemp;
 
 bool shouldReboot = false;
-PersWiFiManager persWM;
 WiFiClient client;
 
 TaskHandle_t xHandle;
@@ -71,7 +70,7 @@ void setup() {
   u8g2Fonts.setFont(u8g2_font_helvB10_tf);
   char buf[64] = "Waiting for WiFi";
   partialUpdate(buf);
-  persWM.begin();
+  PersWM.begin();
 
   setSyncProvider([](){ return rtc.getEpoch(); });
   Alarm.alarmRepeat(0,0,config.alarms.on, [](){ r1.turnOn(); });
@@ -87,7 +86,7 @@ void loop() {
     ESP.restart();
   }
   Alarm.delay(1000);
-  persWM.handleWiFi();
+  PersWM.handleWiFi();
 
   if (sht.readSample()) {
     cTemp = sht.getTemperature();
