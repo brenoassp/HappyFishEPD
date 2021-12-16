@@ -1,7 +1,5 @@
 #include "PersWiFiManager.h"
 
-elapsedMillis timeElapsed;
-
 void PersWiFiManager::_begin() {
   WiFi.setHostname(config.server.hostname);
   WiFi.begin();
@@ -23,6 +21,7 @@ void PersWiFiManager::begin() {
   _begin();
 
   Serial.println(F("Waiting for WiFi."));
+  elapsedMillis timeElapsed;
   while (WiFi.status() != WL_CONNECTED && timeElapsed < timeoutLength) {
     delay(500);
     Serial.print(F("."));

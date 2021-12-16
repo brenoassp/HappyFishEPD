@@ -65,6 +65,12 @@ void setup() {
     Serial.println(F("Failed to mount file system"));
   }
   loadConfigFile(configFilePath, config);
+
+  u8g2Fonts.setFontMode(1);
+  u8g2Fonts.setFontDirection(0);
+  u8g2Fonts.setFont(u8g2_font_helvB10_tf);
+  char buf[64] = "Waiting for WiFi";
+  partialUpdate(buf);
   persWM.begin();
 
   setSyncProvider([](){ return rtc.getEpoch(); });
@@ -88,7 +94,6 @@ void loop() {
     tstat.handle(cTemp);
   }
 
-  display.setRotation(1);
   u8g2Fonts.setFontMode(1);
   u8g2Fonts.setFontDirection(0);
   u8g2Fonts.setFont(u8g2_font_logisoso46_tf);
@@ -97,7 +102,7 @@ void loop() {
              sizeof(buf),
              PSTR("%.2f°"),
              cTemp);
-  middlePartialUpdate(buf);
+  partialUpdate(buf);
 
   ThingSpeak.setField(1, cTemp);
   ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
@@ -109,7 +114,7 @@ void vTaskCode(void* pvParameter) {
   }
 }
 
-void middlePartialUpdate(const char* buf) {
+void partialUpdate(const char* buf) {
   uint16_t bg = GxEPD_WHITE;
   uint16_t fg = GxEPD_BLACK;
   u8g2Fonts.setForegroundColor(fg);
