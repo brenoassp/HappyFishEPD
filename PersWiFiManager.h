@@ -3,12 +3,15 @@
 
 #include <Arduino.h>
 #include <ArduinoOTA.h>
+#include <AsyncTCP.h>
 #include <elapsedMillis.h>
+#include <ESPAsyncWebServer.h>
+#include <LittleFS.h>
 #include <NTPClient.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
-#include "Config.h"
 #include "ESP32Helper.h"
+#include "Config.h"
 
 class PersWiFiManager {
   const char* _poolServerName = "br.pool.ntp.org";
@@ -18,6 +21,7 @@ class PersWiFiManager {
   void        _begin();
   void        _initOTA();
   void        _initNTP();
+  void        _initWS();
 
   public:
     PersWiFiManager():
@@ -28,5 +32,7 @@ class PersWiFiManager {
 };
 
 extern PersWiFiManager PersWiFi;
+extern AsyncWebServer AWebServer;
+extern AsyncEventSource AEventSource;
 
 #endif

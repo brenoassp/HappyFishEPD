@@ -11,18 +11,13 @@
 #include "ESP32Helper.h"
 
 class EPDClass {
-  GxEPD2_BW<GxEPD2_290, GxEPD2_290::HEIGHT> _display;
-  U8G2_FOR_ADAFRUIT_GFX                     _u8g2Fonts;
-
   public:
-    EPDClass():
-              _display(GxEPD2_290(_CS_PIN, _DC_PIN, _RST_PIN, _BUSY_PIN))
-              {};
     void setup();
-    U8G2_FOR_ADAFRUIT_GFX* getFonts();
     void partialUpdate(const char* buf);
 };
 
 extern EPDClass EPD;
+extern GxEPD2_BW<GxEPD2_290, GxEPD2_290::HEIGHT> Display;
+extern U8G2_FOR_ADAFRUIT_GFX U8g2Fonts;
 
 #endif

@@ -2,7 +2,7 @@
 
 bool shouldReboot = false;
 const unsigned long timeoutLength = 60000;
-ESP32Time rtc;
+ESP32Time RTC;
 
 void Relay::setup() {
   pinMode(_pin, OUTPUT);

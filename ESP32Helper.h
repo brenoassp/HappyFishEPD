@@ -28,7 +28,7 @@
 
 extern bool shouldReboot;
 extern const unsigned long timeoutLength;
-extern ESP32Time rtc;
+extern ESP32Time RTC;
 
 class Relay {
   byte _pin;

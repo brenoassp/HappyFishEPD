@@ -55,12 +55,12 @@ void setup() {
   }
 
   char buf[64] = "Waiting for WiFi";
-  EPD.getFonts()->setFont(u8g2_font_helvB10_tf);
+  U8g2Fonts.setFont(u8g2_font_helvB10_tf);
   EPD.partialUpdate(buf);
   PersWiFi.begin();
 
-  setSyncProvider([](){ return rtc.getEpoch(); });
-  Alarm.alarmRepeat(0,0,config.alarms.on, [](){ r1.turnOn(); });
+  setSyncProvider([]() { return RTC.getEpoch(); });
+  Alarm.alarmRepeat(0,0,config.alarms.on, []() { r1.turnOn(); });
   Alarm.alarmRepeat(0,0,config.alarms.off, []() { r1.turnOff(); });
 
   ThingSpeak.begin(client);
@@ -86,7 +86,7 @@ void loop() {
              sizeof(buf),
              PSTR("%.2f°"),
              cTemp);
-  EPD.getFonts()->setFont(u8g2_font_logisoso46_tf);
+  U8g2Fonts.setFont(u8g2_font_logisoso46_tf);
   EPD.partialUpdate(buf);
 
   ThingSpeak.setField(1, cTemp);

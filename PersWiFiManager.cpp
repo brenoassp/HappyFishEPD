@@ -1,6 +1,8 @@
 #include "PersWiFiManager.h"
 
 PersWiFiManager PersWiFi;
+AsyncWebServer AWebServer(80);
+AsyncEventSource AEventSource("/events");
 
 void PersWiFiManager::_begin() {
   WiFi.setHostname(config.server.host);
@@ -15,7 +17,43 @@ void PersWiFiManager::_initOTA() {
 
 void PersWiFiManager::_initNTP() {
   _timeClient.begin();
-  _timeClient.forceUpdate();
+  if (_timeClient.forceUpdate()) {
+    RTC.setTime(_timeClient.getEpochTime());
+  }
+}
+
+void PersWiFiManager::_initWS() {
+  AWebServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if(!request->authenticate(
+      (const char *)config.server.user,
+      (const char *)config.server.pass
+    ))
+      return request->requestAuthentication();
+    request->send(LittleFS, "/index.html");
+  });
+  AWebServer.onNotFound([](AsyncWebServerRequest *request) {
+    request->send(404, "text/plain", "Not found");
+  });
+  AWebServer
+    .serveStatic("/", LittleFS, "/")
+    .setAuthentication(
+      (const char *)config.server.user,
+      (const char *)config.server.pass
+    );
+  AWebServer.begin();
+
+  AEventSource.onConnect([](AsyncEventSourceClient *client) {
+    if (client->lastId()) {
+      Serial.printf("Client reconnected! Last message ID that it gat is: %u\n", client->lastId());
+    }
+    client->send("hello!", NULL, millis(), 1000);
+  });
+  AEventSource
+    .setAuthentication(
+      (const char *)config.server.user,
+      (const char *)config.server.pass
+    );
+  AWebServer.addHandler(&AEventSource);
 }
 
 void PersWiFiManager::begin() {
@@ -53,11 +91,12 @@ void PersWiFiManager::begin() {
 
   _initOTA();
   _initNTP();
+  _initWS();
 }
 
 void PersWiFiManager::handleWiFi() {
   ArduinoOTA.handle();
   if (_timeClient.update()) {
-    rtc.setTime(_timeClient.getEpochTime());
+    RTC.setTime(_timeClient.getEpochTime());
   }
 }

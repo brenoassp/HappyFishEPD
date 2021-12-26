@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>esp32s2</title>
+  </head>
+  <body>
+    <main>
+      Home Page!
+    </main>
+  </body>
+  <script>
+    if (!!window.EventSource) {
+      var source = new EventSource('/events');
+
+      source.addEventListener('open', (e) => {
+        console.log("Events Connected");
+      }, false);
+
+      source.addEventListener('error', (e) => {
+        if (e.target.readyState != EventSource.OPEN) {
+          console.log("Events Disconnected");
+        }
+      }, false);
+
+      source.addEventListener('message', (e) => {
+        console.log('message', e.data);
+      }, false);
+    }
+  </script>
+</html>
