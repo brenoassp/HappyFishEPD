@@ -20,7 +20,7 @@ Relay r1(_D38_PIN);
 Relay r2(_D40_PIN);
 Tstat tstat(r2);
 
-SHTSensor sht(SHT_0x45);
+SHTSensor sht(SHT_0x44);
 float cTemp;
 
 TaskHandle_t xHandle;
