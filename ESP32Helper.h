@@ -26,6 +26,7 @@
 #define SHT_0x44 SHTSensor::SHT3X
 #define SHT_0x45 SHTSensor::SHT3X_ALT
 
+extern bool shouldReboot;
 extern const unsigned long timeoutLength;
 extern ESP32Time rtc;
 

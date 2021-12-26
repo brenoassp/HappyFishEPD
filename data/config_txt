@@ -1,11 +1,18 @@
 {
   "server": {
-    "hostname": "myesp32",
+    "host": "esp32s2",
     "user": "admin",
-    "pass": ""
+    "pass": "1admin"
   },
   "alarms": {
     "on": 28800,
     "off": 57600
+  },
+  "mqtt": {
+    "server": "",
+    "port": 1883,
+    "user": "",
+    "pass": "",
+    "clientId": ""
   }
 }

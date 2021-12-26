@@ -27,6 +27,6 @@ class PersWiFiManager {
     void handleWiFi();
 };
 
-extern PersWiFiManager PersWM;
+extern PersWiFiManager PersWiFi;
 
 #endif

@@ -8,7 +8,7 @@
 extern const char* configFilePath;
 
 struct ServerConfig {
-  char hostname[32];
+  char host[32];
   char user[32];
   char pass[32];
   void load(JsonObjectConst);

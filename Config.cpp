@@ -4,9 +4,9 @@ const char* configFilePath = "/config.txt";
 Config config;
 
 void ServerConfig::load(JsonObjectConst obj) {
-  strncpy_P(hostname,
-            obj["hostname"] | "myesp32",
-            sizeof(hostname));
+  strncpy_P(host,
+            obj["host"] | "myesp32",
+            sizeof(host));
   strncpy_P(user,
             obj["user"] | "admin",
             sizeof(user));
@@ -16,7 +16,7 @@ void ServerConfig::load(JsonObjectConst obj) {
 }
 
 void ServerConfig::save(JsonObject obj) const {
-  obj["hostname"] = hostname;
+  obj["host"] = host;
   obj["user"] = user;
   obj["pass"] = pass;
 }

@@ -1,5 +1,6 @@
 #include "ESP32Helper.h"
 
+bool shouldReboot = false;
 const unsigned long timeoutLength = 60000;
 ESP32Time rtc;
 
