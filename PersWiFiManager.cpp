@@ -1,8 +1,8 @@
 #include "PersWiFiManager.h"
 
 PersWiFiManager PersWiFi;
-AsyncWebServer AWebServer(80);
-AsyncEventSource AEventSource("/events");
+AsyncWebServer WS(80);
+AsyncEventSource ES("/events");
 
 void PersWiFiManager::_begin() {
   WiFi.setHostname(config.server.host);
@@ -23,37 +23,35 @@ void PersWiFiManager::_initNTP() {
 }
 
 void PersWiFiManager::_initWS() {
-  AWebServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+  WS.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     if(!request->authenticate(
       (const char *)config.server.user,
       (const char *)config.server.pass
     ))
       return request->requestAuthentication();
-    request->send(LittleFS, "/index.html");
+    request->send(LittleFS, "/www/index.html");
   });
-  AWebServer.onNotFound([](AsyncWebServerRequest *request) {
+  WS.onNotFound([](AsyncWebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
   });
-  AWebServer
-    .serveStatic("/", LittleFS, "/")
-    .setAuthentication(
-      (const char *)config.server.user,
-      (const char *)config.server.pass
-    );
-  AWebServer.begin();
+  WS.serveStatic("/", LittleFS, "/www/")
+  .setAuthentication(
+    (const char *)config.server.user,
+    (const char *)config.server.pass
+  );
+  WS.begin();
 
-  AEventSource.onConnect([](AsyncEventSourceClient *client) {
+  ES.onConnect([](AsyncEventSourceClient *client) {
     if (client->lastId()) {
       Serial.printf("Client reconnected! Last message ID that it gat is: %u\n", client->lastId());
     }
     client->send("hello!", NULL, millis(), 1000);
   });
-  AEventSource
-    .setAuthentication(
-      (const char *)config.server.user,
-      (const char *)config.server.pass
-    );
-  AWebServer.addHandler(&AEventSource);
+  ES.setAuthentication(
+    (const char *)config.server.user,
+    (const char *)config.server.pass
+  );
+  WS.addHandler(&ES);
 }
 
 void PersWiFiManager::begin() {

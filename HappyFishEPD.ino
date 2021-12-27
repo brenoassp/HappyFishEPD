@@ -1,7 +1,7 @@
 #include <Button2.h>
 #include <LittleFS.h>
+#include <PubSubClient.h>
 #include <SHTSensor.h>
-#include <ThingSpeak.h>
 #include <TimeAlarms.h>
 #include <TimeLib.h>
 #include <Wire.h>
@@ -10,10 +10,8 @@
 #include "EPD.h"
 #include "PersWiFiManager.h"
 
-unsigned long myChannelNumber = 1592680;
-const char*   myWriteAPIKey = "N9VTLDZOJEQC2FQX";
-
-WiFiClient client;
+WiFiClient espClient;
+PubSubClient mqttClient(espClient);
 
 Button2 btn1(_D36_PIN);
 Relay r1(_D38_PIN);
@@ -63,7 +61,11 @@ void setup() {
   Alarm.alarmRepeat(0,0,config.alarms.on, []() { r1.turnOn(); });
   Alarm.alarmRepeat(0,0,config.alarms.off, []() { r1.turnOff(); });
 
-  ThingSpeak.begin(client);
+  mqttClient.setServer(
+    (const char *)config.mqtt.server,
+    config.mqtt.port
+  );
+  mqttClient.setBufferSize(2048);
 }
 
 void loop() {
@@ -73,7 +75,6 @@ void loop() {
     ESP.restart();
   }
   PersWiFi.handleWiFi();
-  Alarm.delay(1000);
 
   if (sht.readSample()) {
     cTemp = sht.getTemperature();
@@ -89,8 +90,24 @@ void loop() {
   U8g2Fonts.setFont(u8g2_font_logisoso46_tf);
   EPD.partialUpdate(buf);
 
-  ThingSpeak.setField(1, cTemp);
-  ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);
+  if (!mqttClient.connected()) {
+    mqttClient.connect(
+      (const char *)config.mqtt.clientId,
+      (const char *)config.mqtt.user,
+      (const char *)config.mqtt.pass
+    );
+    mqttClient.subscribe("channels/1606204/subscribe");
+  }
+  mqttClient.loop();
+
+  String s(mqttClient.state());
+  ES.send(s.c_str(), "message", millis());
+
+  dtostrf(cTemp, 5, 2, buf);
+  mqttClient.publish("channels/1606204/publish/fields/field1", buf);
+
+  // End of loop calls
+  Alarm.delay(1000);
 }
 
 void vTaskCode(void* pvParameter) {

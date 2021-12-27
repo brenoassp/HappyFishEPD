@@ -22,8 +22,8 @@ void ServerConfig::save(JsonObject obj) const {
 }
 
 void AlarmsConfig::load(JsonObjectConst obj) {
-  on = obj["on"];
-  off = obj["off"];
+  on = obj["on"].as<int>();
+  off = obj["off"].as<int>();
 }
 
 void AlarmsConfig::save(JsonObject obj) const {
@@ -31,14 +31,40 @@ void AlarmsConfig::save(JsonObject obj) const {
   obj["off"] = off;
 }
 
+void MQTTConfig::load(JsonObjectConst obj) {
+  strncpy_P(server,
+            obj["server"] | "",
+            sizeof(server));
+  port = obj["port"].as<int>();
+  strncpy_P(user,
+            obj["user"] | "",
+            sizeof(user));
+  strncpy_P(pass,
+            obj["pass"] | "",
+            sizeof(pass));
+  strncpy_P(clientId,
+            obj["clientId"] | "",
+            sizeof(clientId));
+}
+
+void MQTTConfig::save(JsonObject obj) const {
+  obj["server"] = server;
+  obj["port"] = port;
+  obj["user"] = user;
+  obj["pass"] = pass;
+  obj["clientId"] = clientId;
+}
+
 void Config::load(JsonObjectConst obj) {
   server.load(obj["server"]);
   alarms.load(obj["alarms"]);
+  mqtt.load(obj["mqtt"]);
 }
 
 void Config::save(JsonObject obj) const {
   server.save(obj.createNestedObject("server"));
   alarms.save(obj.createNestedObject("alarms"));
+  mqtt.save(obj.createNestedObject("mqtt"));
 }
 
 bool deserializeConfig(Stream& src, Config& config) {

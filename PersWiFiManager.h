@@ -32,7 +32,7 @@ class PersWiFiManager {
 };
 
 extern PersWiFiManager PersWiFi;
-extern AsyncWebServer AWebServer;
-extern AsyncEventSource AEventSource;
+extern AsyncWebServer WS;
+extern AsyncEventSource ES;
 
 #endif
