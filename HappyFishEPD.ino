@@ -21,6 +21,7 @@ Tstat tstat(r2);
 SHTSensor sht(SHT_0x44);
 float cTemp;
 
+unsigned long previousMillis = 0;
 TaskHandle_t xHandle;
 
 void setup() {
@@ -103,8 +104,11 @@ void loop() {
   String s(mqttClient.state());
   ES.send(s.c_str(), "message", millis());
 
-  dtostrf(cTemp, 5, 2, buf);
-  mqttClient.publish("channels/1606204/publish/fields/field1", buf);
+  if (millis() - previousMillis > 2000) {
+    previousMillis = millis();
+    dtostrf(cTemp, 5, 2, buf);
+    mqttClient.publish("channels/1606204/publish/fields/field1", buf);
+  }
 
   // End of loop calls
   Alarm.delay(1000);
