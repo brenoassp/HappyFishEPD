@@ -3,6 +3,8 @@
 WiFiManagerClass WiFiManager;
 AsyncWebServer server(80);
 AsyncEventSource events("/events");
+WiFiClient espClient;
+PubSubClient mqttClient(espClient);
 
 void WiFiManagerClass::_begin() {
   WiFi.setHostname(config.server.host);
@@ -54,6 +56,14 @@ void WiFiManagerClass::_initWebServer() {
   server.addHandler(&events);
 }
 
+void WiFiManagerClass::_initMQTTClient() {
+  mqttClient.setServer(
+    (const char *)config.mqtt.server,
+    config.mqtt.port
+  );
+  mqttClient.setBufferSize(2048);
+}
+
 void WiFiManagerClass::begin() {
   WiFi.mode(WIFI_AP_STA);
   _begin();
@@ -90,11 +100,23 @@ void WiFiManagerClass::begin() {
   _initOTA();
   _initNTP();
   _initWebServer();
+  _initMQTTClient();
 }
 
 void WiFiManagerClass::handleWiFi() {
   ArduinoOTA.handle();
+
   if (_timeClient.update()) {
     RTC.setTime(_timeClient.getEpochTime());
   }
+
+  if (!mqttClient.connected()) {
+    mqttClient.connect(
+      (const char *)config.mqtt.clientId,
+      (const char *)config.mqtt.user,
+      (const char *)config.mqtt.pass
+    );
+    mqttClient.subscribe("channels/1606204/subscribe");
+  }
+  mqttClient.loop();
 }

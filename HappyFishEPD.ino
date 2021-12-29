@@ -1,6 +1,5 @@
 #include <Button2.h>
 #include <LittleFS.h>
-#include <PubSubClient.h>
 #include <SHTSensor.h>
 #include <TimeAlarms.h>
 #include <TimeLib.h>
@@ -9,9 +8,6 @@
 #include "Config.h"
 #include "EPD.h"
 #include "WiFiManager.h"
-
-WiFiClient espClient;
-PubSubClient mqttClient(espClient);
 
 Button2 btn1(_D36_PIN);
 Relay r1(_D38_PIN);
@@ -61,12 +57,6 @@ void setup() {
   setSyncProvider([]() { return RTC.getEpoch(); });
   Alarm.alarmRepeat(0,0,config.alarms.on, []() { r1.turnOn(); });
   Alarm.alarmRepeat(0,0,config.alarms.off, []() { r1.turnOff(); });
-
-  mqttClient.setServer(
-    (const char *)config.mqtt.server,
-    config.mqtt.port
-  );
-  mqttClient.setBufferSize(2048);
 }
 
 void loop() {
@@ -89,19 +79,6 @@ void loop() {
              cTemp);
   u8g2Fonts.setFont(u8g2_font_logisoso46_tf);
   EPD.partialUpdate(buf);
-
-  if (!mqttClient.connected()) {
-    mqttClient.connect(
-      (const char *)config.mqtt.clientId,
-      (const char *)config.mqtt.user,
-      (const char *)config.mqtt.pass
-    );
-    mqttClient.subscribe("channels/1606204/subscribe");
-  }
-  mqttClient.loop();
-
-  String s(mqttClient.state());
-  events.send(s.c_str(), "message", millis());
 
   if (millis() - previousMillis > 2000) {
     previousMillis = millis();

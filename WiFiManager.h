@@ -8,6 +8,7 @@
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
 #include <NTPClient.h>
+#include <PubSubClient.h>
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include "S2MiniHelper.h"
@@ -15,6 +16,8 @@
 
 extern AsyncWebServer server;
 extern AsyncEventSource events;
+extern WiFiClient espClient;
+extern PubSubClient mqttClient;
 
 class WiFiManagerClass {
   const char *_poolServerName = "br.pool.ntp.org";
@@ -25,6 +28,7 @@ class WiFiManagerClass {
   void _initOTA();
   void _initNTP();
   void _initWebServer();
+  void _initMQTTClient();
 
   public:
     WiFiManagerClass():
