@@ -5,10 +5,10 @@
 #include <TimeAlarms.h>
 #include <TimeLib.h>
 #include <Wire.h>
-#include "ESP32Helper.h"
+#include "S2MiniHelper.h"
 #include "Config.h"
 #include "EPD.h"
-#include "PersWiFiManager.h"
+#include "WiFiManager.h"
 
 WiFiClient espClient;
 PubSubClient mqttClient(espClient);
@@ -28,7 +28,7 @@ void setup() {
   Serial.begin(115200);
   // while (!Serial) ;
   Wire.begin(_SDA_PIN, _SCL_PIN);
-  xTaskCreatePinnedToCore(vTaskCode, "vTaskCode", 2048, NULL,1, &xHandle, /* core */ 0);
+  xTaskCreatePinnedToCore(vTaskCode, "vTaskCode", 2048, NULL, 1, &xHandle, /* core */ 0);
 
   if (!LittleFS.begin()) {
     Serial.println(F("Failed to mount file system"));
@@ -39,14 +39,14 @@ void setup() {
   r1.setup();
   r2.setup();
   digitalWrite(btn1.getAttachPin(), LOW);
-  btn1.setPressedHandler([](Button2& btn) { r1.toggle(); });
+  btn1.setPressedHandler([](Button2 &btn) { r1.toggle(); });
 
   if (sht.init()) {
     sht.setAccuracy(SHTSensor::SHT_ACCURACY_HIGH);
     tstat.setup(TstatMode::HEAT,
                 /* setpoint */   25.5,
                 /* hysteresis */ 1,
-                /* lowerLimit */ 20,
+                /* lowerLimit */ 18,
                 /* upperLimit */ 28,
                 /* interval */   timeoutLength*10);
   } else {
@@ -54,9 +54,9 @@ void setup() {
   }
 
   char buf[64] = "Waiting for WiFi";
-  U8g2Fonts.setFont(u8g2_font_helvB10_tf);
+  u8g2Fonts.setFont(u8g2_font_helvB10_tf);
   EPD.partialUpdate(buf);
-  PersWiFi.begin();
+  WiFiManager.begin();
 
   setSyncProvider([]() { return RTC.getEpoch(); });
   Alarm.alarmRepeat(0,0,config.alarms.on, []() { r1.turnOn(); });
@@ -75,12 +75,11 @@ void loop() {
     delay(100);
     ESP.restart();
   }
-  PersWiFi.handleWiFi();
+  WiFiManager.handleWiFi();
 
   if (sht.readSample()) {
     cTemp = sht.getTemperature();
     tstat.handle(cTemp);
-    Serial.println(cTemp);
   }
 
   char buf[16];
@@ -88,7 +87,7 @@ void loop() {
              sizeof(buf),
              PSTR("%.2f°"),
              cTemp);
-  U8g2Fonts.setFont(u8g2_font_logisoso46_tf);
+  u8g2Fonts.setFont(u8g2_font_logisoso46_tf);
   EPD.partialUpdate(buf);
 
   if (!mqttClient.connected()) {
@@ -102,7 +101,7 @@ void loop() {
   mqttClient.loop();
 
   String s(mqttClient.state());
-  ES.send(s.c_str(), "message", millis());
+  events.send(s.c_str(), "message", millis());
 
   if (millis() - previousMillis > 2000) {
     previousMillis = millis();
@@ -114,7 +113,7 @@ void loop() {
   Alarm.delay(1000);
 }
 
-void vTaskCode(void* pvParameter) {
+void vTaskCode(void *pvParameter) {
   for(;;) {
     btn1.loop();
   }

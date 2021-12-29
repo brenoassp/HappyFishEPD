@@ -1,5 +1,5 @@
-#ifndef _ESP32HELPER_H_
-#define _ESP32HELPER_H_
+#ifndef _S2MiniHelper_H_
+#define _S2MiniHelper_H_
 
 #include <Arduino.h>
 #include <elapsedMillis.h>
@@ -36,7 +36,9 @@ class Relay {
   void write();
 
   public:
-    Relay(const byte pin): _pin(pin) {};
+    Relay(const byte pin):
+                         _pin(pin)
+                         {};
     void setup();
     bool isOn();
     bool isOff();
@@ -59,20 +61,22 @@ enum TstatState {
 };
 
 class Tstat {
-  Relay         _r;
-  TstatMode     _mode = TstatMode::NONE;
-  TstatState    _state = TstatState::IDLE;
+  Relay _r;
+  TstatMode _mode = TstatMode::NONE;
+  TstatState _state = TstatState::IDLE;
   elapsedMillis _timeElapsed;
-  float         _setpoint;
-  float         _hysteresis;
-  float         _lowerLimit;
-  float         _upperLimit;
+  float _setpoint;
+  float _hysteresis;
+  float _lowerLimit;
+  float _upperLimit;
   unsigned long _interval;
   bool tooCold(const float cTemp);
   bool tooHot(const float cTemp);
 
   public:
-    Tstat(const Relay& r): _r(r) {};
+    Tstat(const Relay &r):
+                         _r(r)
+                         {};
     void setup(const TstatMode mode,
                const float setpoint,
                const float hysteresis,

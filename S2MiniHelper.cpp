@@ -1,4 +1,4 @@
-#include "ESP32Helper.h"
+#include "S2MiniHelper.h"
 
 bool shouldReboot = false;
 const unsigned long timeoutLength = 60000;

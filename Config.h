@@ -5,7 +5,7 @@
 #include <ArduinoJson.h>
 #include <LittleFS.h>
 
-extern const char* configFilePath;
+extern const char *configFilePath;
 
 struct ServerConfig {
   char host[32];
@@ -40,10 +40,10 @@ struct Config {
   void save(JsonObject) const;
 };
 
-bool deserializeConfig(Stream& src, Config& config);
-bool serializeConfig(const Config& config, Print& dest);
-bool loadConfigFile(const char* filename, Config& config);
-bool saveConfigFile(const char* filename, const Config& config);
+bool deserializeConfig(Stream &src, Config &config);
+bool serializeConfig(const Config &config, Print &dest);
+bool loadConfigFile(const char *filename, Config &config);
+bool saveConfigFile(const char *filename, const Config &config);
 
 extern Config config;
 

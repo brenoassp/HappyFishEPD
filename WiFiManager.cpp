@@ -1,29 +1,29 @@
-#include "PersWiFiManager.h"
+#include "WiFiManager.h"
 
-PersWiFiManager PersWiFi;
-AsyncWebServer WS(80);
-AsyncEventSource ES("/events");
+WiFiManagerClass WiFiManager;
+AsyncWebServer server(80);
+AsyncEventSource events("/events");
 
-void PersWiFiManager::_begin() {
+void WiFiManagerClass::_begin() {
   WiFi.setHostname(config.server.host);
   WiFi.begin();
 }
 
-void PersWiFiManager::_initOTA() {
+void WiFiManagerClass::_initOTA() {
   ArduinoOTA.setHostname((const char *)config.server.host);
   ArduinoOTA.setPassword((const char *)config.server.pass);
   ArduinoOTA.begin();
 }
 
-void PersWiFiManager::_initNTP() {
+void WiFiManagerClass::_initNTP() {
   _timeClient.begin();
   if (_timeClient.forceUpdate()) {
     RTC.setTime(_timeClient.getEpochTime());
   }
 }
 
-void PersWiFiManager::_initWS() {
-  WS.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+void WiFiManagerClass::_initWebServer() {
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     if(!request->authenticate(
       (const char *)config.server.user,
       (const char *)config.server.pass
@@ -31,30 +31,30 @@ void PersWiFiManager::_initWS() {
       return request->requestAuthentication();
     request->send(LittleFS, "/www/index.html");
   });
-  WS.onNotFound([](AsyncWebServerRequest *request) {
+  server.onNotFound([](AsyncWebServerRequest *request) {
     request->send(404, "text/plain", "Not found");
   });
-  WS.serveStatic("/", LittleFS, "/www/")
+  server.serveStatic("/", LittleFS, "/www/")
   .setAuthentication(
     (const char *)config.server.user,
     (const char *)config.server.pass
   );
-  WS.begin();
+  server.begin();
 
-  ES.onConnect([](AsyncEventSourceClient *client) {
+  events.onConnect([](AsyncEventSourceClient *client) {
     if (client->lastId()) {
       Serial.printf("Client reconnected! Last message ID that it gat is: %u\n", client->lastId());
     }
     client->send("hello!", NULL, millis(), 1000);
   });
-  ES.setAuthentication(
+  events.setAuthentication(
     (const char *)config.server.user,
     (const char *)config.server.pass
   );
-  WS.addHandler(&ES);
+  server.addHandler(&events);
 }
 
-void PersWiFiManager::begin() {
+void WiFiManagerClass::begin() {
   WiFi.mode(WIFI_AP_STA);
   _begin();
 
@@ -89,10 +89,10 @@ void PersWiFiManager::begin() {
 
   _initOTA();
   _initNTP();
-  _initWS();
+  _initWebServer();
 }
 
-void PersWiFiManager::handleWiFi() {
+void WiFiManagerClass::handleWiFi() {
   ArduinoOTA.handle();
   if (_timeClient.update()) {
     RTC.setTime(_timeClient.getEpochTime());
